@@ -1,6 +1,8 @@
 import os
+import re
 import uuid
 import asyncio
+import unicodedata
 from pathlib import Path
 
 import edge_tts
@@ -64,6 +66,131 @@ PLATFORM_PRESETS = {
 }
 
 
+SCRIPT_TO_LOCALE: dict[str, str] = {
+    "MYANMAR": "my-MM",
+    "THAI": "th-TH",
+    "CJK": "zh-CN",
+    "HANGUL": "ko-KR",
+    "HIRAGANA": "ja-JP",
+    "KATAKANA": "ja-JP",
+    "DEVANAGARI": "hi-IN",
+    "ARABIC": "ar-SA",
+    "HEBREW": "he-IL",
+    "BENGALI": "bn-IN",
+    "TAMIL": "ta-IN",
+    "TELUGU": "te-IN",
+    "KANNADA": "kn-IN",
+    "MALAYALAM": "ml-IN",
+    "GUJARATI": "gu-IN",
+    "GEORGIAN": "ka-GE",
+    "ARMENIAN": "hy-AM",
+    "ETHIOPIC": "am-ET",
+    "KHMER": "km-KH",
+    "LAO": "lo-LA",
+    "SINHALA": "si-LK",
+    "TIBETAN": "bo-CN",
+    "GREEK": "el-GR",
+    "CYRILLIC": "ru-RU",
+}
+
+DEFAULT_VOICES: dict[str, str] = {
+    "my-MM": "my-MM-ThihaNeural",
+    "th-TH": "th-TH-PremwadeeNeural",
+    "zh-CN": "zh-CN-XiaoxiaoNeural",
+    "ko-KR": "ko-KR-SunHiNeural",
+    "ja-JP": "ja-JP-NanamiNeural",
+    "hi-IN": "hi-IN-SwaraNeural",
+    "ar-SA": "ar-SA-ZariyahNeural",
+    "he-IL": "he-IL-HilaNeural",
+    "bn-IN": "bn-IN-TanishaaNeural",
+    "ta-IN": "ta-IN-PallaviNeural",
+    "te-IN": "te-IN-ShrutiNeural",
+    "kn-IN": "kn-IN-SapnaNeural",
+    "ml-IN": "ml-IN-SobhanaNeural",
+    "gu-IN": "gu-IN-DhwaniNeural",
+    "ka-GE": "ka-GE-EkaNeural",
+    "am-ET": "am-ET-MekdesNeural",
+    "km-KH": "km-KH-SreymomNeural",
+    "lo-LA": "lo-LA-KeomanyNeural",
+    "si-LK": "si-LK-ThiliniNeural",
+    "el-GR": "el-GR-AthinaNeural",
+    "ru-RU": "ru-RU-SvetlanaNeural",
+}
+
+
+def detect_script(text: str) -> str | None:
+    script_counts: dict[str, int] = {}
+    for ch in text:
+        if ch.isspace() or unicodedata.category(ch).startswith("P"):
+            continue
+        name = unicodedata.name(ch, "")
+        if "MYANMAR" in name:
+            script_counts["MYANMAR"] = script_counts.get("MYANMAR", 0) + 1
+        elif "THAI" in name:
+            script_counts["THAI"] = script_counts.get("THAI", 0) + 1
+        elif "CJK" in name:
+            script_counts["CJK"] = script_counts.get("CJK", 0) + 1
+        elif "HANGUL" in name:
+            script_counts["HANGUL"] = script_counts.get("HANGUL", 0) + 1
+        elif "HIRAGANA" in name:
+            script_counts["HIRAGANA"] = script_counts.get("HIRAGANA", 0) + 1
+        elif "KATAKANA" in name:
+            script_counts["KATAKANA"] = script_counts.get("KATAKANA", 0) + 1
+        elif "DEVANAGARI" in name:
+            script_counts["DEVANAGARI"] = script_counts.get("DEVANAGARI", 0) + 1
+        elif "ARABIC" in name:
+            script_counts["ARABIC"] = script_counts.get("ARABIC", 0) + 1
+        elif "HEBREW" in name:
+            script_counts["HEBREW"] = script_counts.get("HEBREW", 0) + 1
+        elif "BENGALI" in name:
+            script_counts["BENGALI"] = script_counts.get("BENGALI", 0) + 1
+        elif "TAMIL" in name:
+            script_counts["TAMIL"] = script_counts.get("TAMIL", 0) + 1
+        elif "TELUGU" in name:
+            script_counts["TELUGU"] = script_counts.get("TELUGU", 0) + 1
+        elif "KANNADA" in name:
+            script_counts["KANNADA"] = script_counts.get("KANNADA", 0) + 1
+        elif "MALAYALAM" in name:
+            script_counts["MALAYALAM"] = script_counts.get("MALAYALAM", 0) + 1
+        elif "GUJARATI" in name:
+            script_counts["GUJARATI"] = script_counts.get("GUJARATI", 0) + 1
+        elif "GEORGIAN" in name:
+            script_counts["GEORGIAN"] = script_counts.get("GEORGIAN", 0) + 1
+        elif "ARMENIAN" in name:
+            script_counts["ARMENIAN"] = script_counts.get("ARMENIAN", 0) + 1
+        elif "ETHIOPIC" in name:
+            script_counts["ETHIOPIC"] = script_counts.get("ETHIOPIC", 0) + 1
+        elif "KHMER" in name:
+            script_counts["KHMER"] = script_counts.get("KHMER", 0) + 1
+        elif "LAO" in name:
+            script_counts["LAO"] = script_counts.get("LAO", 0) + 1
+        elif "SINHALA" in name:
+            script_counts["SINHALA"] = script_counts.get("SINHALA", 0) + 1
+        elif "GREEK" in name and "LATIN" not in name:
+            script_counts["GREEK"] = script_counts.get("GREEK", 0) + 1
+        elif "CYRILLIC" in name:
+            script_counts["CYRILLIC"] = script_counts.get("CYRILLIC", 0) + 1
+
+    if not script_counts:
+        return None
+    return max(script_counts, key=script_counts.get)
+
+
+def get_voice_for_text(text: str, current_voice: str) -> str:
+    script = detect_script(text)
+    if script is None:
+        return current_voice
+
+    locale = SCRIPT_TO_LOCALE.get(script)
+    if locale is None:
+        return current_voice
+
+    if current_voice.startswith(locale.split("-")[0]):
+        return current_voice
+
+    return DEFAULT_VOICES.get(locale, current_voice)
+
+
 class TTSRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=10000)
     voice: str = "en-US-GuyNeural"
@@ -114,13 +241,15 @@ async def synthesize(req: TTSRequest):
         req.rate = preset["rate"]
         req.pitch = preset["pitch"]
 
+    resolved_voice = get_voice_for_text(req.text, req.voice)
+
     file_id = str(uuid.uuid4())
     output_path = OUTPUT_DIR / f"{file_id}.mp3"
 
     try:
         communicate = edge_tts.Communicate(
             text=req.text,
-            voice=req.voice,
+            voice=resolved_voice,
             rate=req.rate,
             pitch=req.pitch,
         )
@@ -137,6 +266,7 @@ async def synthesize(req: TTSRequest):
         "size_bytes": file_size,
         "estimated_duration_seconds": duration_estimate,
         "download_url": f"/api/download/{file_id}",
+        "voice_used": resolved_voice,
     }
 
 
@@ -148,10 +278,11 @@ async def batch_synthesize(req: BatchTTSRequest):
             continue
         file_id = str(uuid.uuid4())
         output_path = OUTPUT_DIR / f"{file_id}.mp3"
+        resolved_voice = get_voice_for_text(text.strip(), req.voice)
         try:
             communicate = edge_tts.Communicate(
                 text=text.strip(),
-                voice=req.voice,
+                voice=resolved_voice,
                 rate=req.rate,
                 pitch=req.pitch,
             )

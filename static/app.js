@@ -161,7 +161,12 @@ async function generateSpeech() {
 
         const data = await res.json();
         showResult(data);
-        showStatus('Audio generated successfully!', 'success');
+        const voiceInfo = data.voice_used !== selectedVoice && !selectedPreset
+            ? ` (auto-detected voice: ${data.voice_used})`
+            : data.voice_used !== body.voice
+            ? ` (auto-switched to ${data.voice_used} for your text's language)`
+            : '';
+        showStatus(`Audio generated successfully!${voiceInfo}`, 'success');
     } catch (e) {
         showStatus(`Error: ${e.message}`, 'error');
     } finally {
