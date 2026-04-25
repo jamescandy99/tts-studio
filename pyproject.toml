@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Text-to-Speech web app for YouTube, Facebook, and TikTok content creators"
 requires-python = ">=3.10"
 dependencies = [
-    "fastapi>=0.115.0",
+    "fastapi[standard]>=0.115.0",
     "uvicorn>=0.30.0",
     "edge-tts>=6.1.0",
     "python-multipart>=0.0.9",
