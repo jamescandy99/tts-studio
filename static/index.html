@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Studio — Text to Speech for Creators</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="app-header">
+    <div>
+        <h1><span class="icon">🎙️</span> TTS Studio</h1>
+        <p class="subtitle">Professional text-to-speech for YouTube, TikTok & Facebook creators</p>
+    </div>
+</header>
+
+<main class="main-container">
+    <div class="content">
+        <!-- Platform Presets -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-title">🎯 Platform Presets</div>
+            <div class="presets-grid">
+                <button class="preset-btn preset-youtube" data-preset="youtube">
+                    <div class="preset-icon">▶️</div>
+                    <div class="preset-label">YouTube</div>
+                    <div class="preset-desc">Clear narration voice</div>
+                </button>
+                <button class="preset-btn preset-tiktok" data-preset="tiktok">
+                    <div class="preset-icon">🎵</div>
+                    <div class="preset-label">TikTok</div>
+                    <div class="preset-desc">Energetic voiceover</div>
+                </button>
+                <button class="preset-btn preset-facebook" data-preset="facebook">
+                    <div class="preset-icon">📘</div>
+                    <div class="preset-label">Facebook</div>
+                    <div class="preset-desc">Warm, conversational</div>
+                </button>
+                <button class="preset-btn preset-podcast" data-preset="podcast">
+                    <div class="preset-icon">🎧</div>
+                    <div class="preset-label">Podcast</div>
+                    <div class="preset-desc">Calm, measured tone</div>
+                </button>
+                <button class="preset-btn preset-dramatic" data-preset="dramatic">
+                    <div class="preset-icon">🎬</div>
+                    <div class="preset-label">Dramatic</div>
+                    <div class="preset-desc">Cinematic delivery</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Text Input -->
+        <div class="card">
+            <div class="card-title">✍️ Your Text</div>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="singleTab">Single</button>
+                <button class="tab" data-tab="batchTab">Batch (Paragraphs)</button>
+            </div>
+
+            <div id="singleTab" class="tab-content active">
+                <div class="text-area-wrapper">
+                    <textarea id="textInput" placeholder="Type or paste your script here...&#10;&#10;For batch mode, separate paragraphs with blank lines."></textarea>
+                    <span class="char-counter" id="charCount">0/10000 chars | ~0 words | ~0.0s</span>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls-row">
+                    <div class="range-group">
+                        <div class="range-header">
+                            <label for="rateSlider">Speech Rate</label>
+                            <span class="range-value" id="rateValue">+0%</span>
+                        </div>
+                        <input type="range" id="rateSlider" min="-50" max="50" value="0">
+                    </div>
+                    <div class="range-group">
+                        <div class="range-header">
+                            <label for="pitchSlider">Pitch</label>
+                            <span class="range-value" id="pitchValue">+0Hz</span>
+                        </div>
+                        <input type="range" id="pitchSlider" min="-20" max="20" value="0">
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="generateBtn" onclick="generateSpeech()">
+                    <span>🔊</span> Generate Speech
+                </button>
+
+                <div style="text-align: center; margin-top: 0.75rem;">
+                    <button class="btn-secondary" id="batchBtn" onclick="generateBatch()">
+                        Batch Generate (by paragraphs)
+                    </button>
+                </div>
+
+                <div id="statusMsg" class="status"></div>
+            </div>
+
+            <div id="batchTab" class="tab-content">
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                    Enter your text in the Single tab above. Separate paragraphs with blank lines, 
+                    then click "Batch Generate" to create individual audio files for each paragraph.
+                </p>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="result-section">
+                <div class="card-title">🎵 Generated Audio</div>
+                <div class="audio-player-wrapper">
+                    <audio id="audioPlayer" controls></audio>
+                    <div class="audio-meta">
+                        <span>Size: <span id="audioSize">-</span></span>
+                        <span>Duration: <span id="audioDuration">-</span></span>
+                    </div>
+                </div>
+                <button class="download-btn" id="downloadBtn">
+                    <span>⬇️</span> Download MP3
+                </button>
+
+                <div id="batchResults" class="batch-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Voice Selection -->
+        <div class="card">
+            <div class="card-title">🗣️ Voice Selection</div>
+            <input type="text" class="voice-search" id="voiceSearch" placeholder="Search voices...">
+            <div style="margin-bottom: 0.75rem;">
+                <label for="langFilter">Language</label>
+                <select id="langFilter">
+                    <option value="">All Languages</option>
+                </select>
+            </div>
+            <div id="voiceSelect"></div>
+        </div>
+
+        <!-- Creator Tips -->
+        <div class="card">
+            <div class="card-title">💡 Creator Tips</div>
+            <ul class="tips-list">
+                <li>
+                    <span class="tip-icon">📐</span>
+                    <span><strong>YouTube:</strong> Keep narration between 130-160 words/min for clarity</span>
+                </li>
+                <li>
+                    <span class="tip-icon">⏱️</span>
+                    <span><strong>TikTok:</strong> Aim for 15-60 seconds per clip for maximum engagement</span>
+                </li>
+                <li>
+                    <span class="tip-icon">📝</span>
+                    <span><strong>Facebook:</strong> Add pauses with "..." for natural-sounding breaks</span>
+                </li>
+                <li>
+                    <span class="tip-icon">🎯</span>
+                    <span><strong>Tip:</strong> Use batch mode to split long scripts into segments</span>
+                </li>
+                <li>
+                    <span class="tip-icon">🔄</span>
+                    <span><strong>Tip:</strong> Try different voices and rates to find your brand voice</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
