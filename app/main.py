@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-OUTPUT_DIR = Path("/home/ubuntu/repos/tts-app/output")
+OUTPUT_DIR = Path(os.environ.get("TTS_OUTPUT_DIR", Path(__file__).parent.parent / "output"))
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 STATIC_DIR = Path(__file__).parent.parent / "static"
