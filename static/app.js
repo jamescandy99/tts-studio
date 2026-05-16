@@ -1,13 +1,107 @@
 const API = '';
-let allVoices = {};
-let selectedVoice = 'en-US-GuyNeural';
-let selectedPreset = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadVoices();
+let allVoices = {};
+let selectedVoice = 'en-US-AndrewNeural';
+let selectedPreset = null;
+let selectedLanguage = 'en-US';
+let selectedNarrator = 'male';
+
+let languageCatalog = {
+    'en-US': {
+        label: 'English',
+        native_label: 'English',
+        sample_text: 'Welcome to TTS Studio.',
+    },
+    'my-MM': {
+        label: 'Burmese',
+        native_label: 'မြန်မာဘာသာ',
+        sample_text: 'မင်္ဂလာပါ။ TTS Studio မှ ကြိုဆိုပါတယ်။',
+    },
+};
+
+let narratorCatalog = {
+    'en-US': {
+        male: {
+            label: 'Male',
+            voice: 'en-US-AndrewNeural',
+            rate: '+0%',
+            pitch: '+0Hz',
+            description: 'Clear adult male English narrator',
+        },
+        female: {
+            label: 'Female',
+            voice: 'en-US-EmmaNeural',
+            rate: '+0%',
+            pitch: '+0Hz',
+            description: 'Natural adult female English narrator',
+        },
+        baby_girl: {
+            label: 'Young Baby Girl',
+            voice: 'en-US-AnaNeural',
+            rate: '+8%',
+            pitch: '+18Hz',
+            description: 'Bright childlike English girl narrator',
+        },
+        young_boy: {
+            label: 'Young Boy',
+            voice: 'en-US-EricNeural',
+            rate: '+6%',
+            pitch: '+12Hz',
+            description: 'Youthful English boy-style narrator',
+        },
+    },
+    'my-MM': {
+        male: {
+            label: 'Male',
+            voice: 'my-MM-ThihaNeural',
+            rate: '+0%',
+            pitch: '+0Hz',
+            description: 'Clear adult male Burmese narrator',
+        },
+        female: {
+            label: 'Female',
+            voice: 'my-MM-NilarNeural',
+            rate: '+0%',
+            pitch: '+0Hz',
+            description: 'Natural adult female Burmese narrator',
+        },
+        baby_girl: {
+            label: 'Young Baby Girl',
+            voice: 'my-MM-NilarNeural',
+            rate: '+8%',
+            pitch: '+18Hz',
+            description: 'Childlike Burmese girl narrator using a brighter tone',
+        },
+        young_boy: {
+            label: 'Young Boy',
+            voice: 'my-MM-ThihaNeural',
+            rate: '+6%',
+            pitch: '+12Hz',
+            description: 'Youthful Burmese boy-style narrator using a brighter tone',
+        },
+    },
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadNarrators();
+    await loadVoices();
     setupEventListeners();
+    applyNarratorSelection();
     updateCharCount();
 });
+
+async function loadNarrators() {
+    try {
+        const res = await fetch(`${API}/api/narrators`);
+        const data = await res.json();
+        languageCatalog = data.languages;
+        narratorCatalog = data.narrators;
+        renderLanguageOptions();
+        renderNarratorOptions();
+    } catch (e) {
+        console.error('Failed to load narrator presets:', e);
+    }
+}
 
 async function loadVoices() {
     try {
@@ -20,6 +114,44 @@ async function loadVoices() {
     }
 }
 
+function renderLanguageOptions() {
+    const languageSelect = document.getElementById('languageSelect');
+    languageSelect.innerHTML = '';
+
+    Object.entries(languageCatalog).forEach(([locale, language]) => {
+        const opt = document.createElement('option');
+        opt.value = locale;
+        opt.textContent = language.label === language.native_label
+            ? language.label
+            : `${language.label} / ${language.native_label}`;
+        languageSelect.appendChild(opt);
+    });
+
+    languageSelect.value = selectedLanguage;
+}
+
+function renderNarratorOptions() {
+    const narratorSelect = document.getElementById('narratorSelect');
+    narratorSelect.innerHTML = '<option value="">Custom Voice</option>';
+
+    const narrators = narratorCatalog[selectedLanguage] || {};
+    Object.entries(narrators).forEach(([id, narrator]) => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = narrator.label;
+        narratorSelect.appendChild(opt);
+    });
+
+    if (selectedNarrator === null) {
+        narratorSelect.value = '';
+    } else if (selectedNarrator && narrators[selectedNarrator]) {
+        narratorSelect.value = selectedNarrator;
+    } else {
+        selectedNarrator = 'male';
+        narratorSelect.value = narrators.male ? 'male' : '';
+    }
+}
+
 function renderVoiceList(filter = '') {
     const container = document.getElementById('voiceSelect');
     container.innerHTML = '';
@@ -27,19 +159,18 @@ function renderVoiceList(filter = '') {
 
     const langSelect = document.getElementById('langFilter');
     const selectedLang = langSelect ? langSelect.value : '';
-
-    const languages = Object.keys(allVoices).sort();
+    const supportedLanguages = Object.keys(languageCatalog).filter(lang => allVoices[lang]);
 
     if (langSelect && langSelect.options.length <= 1) {
-        languages.forEach(lang => {
+        supportedLanguages.forEach(lang => {
             const opt = document.createElement('option');
             opt.value = lang;
-            opt.textContent = lang;
+            opt.textContent = languageCatalog[lang].label;
             langSelect.appendChild(opt);
         });
     }
 
-    const filteredLangs = selectedLang ? [selectedLang] : languages;
+    const filteredLangs = selectedLang ? [selectedLang] : supportedLanguages;
 
     filteredLangs.forEach(lang => {
         const voices = allVoices[lang] || [];
@@ -52,16 +183,25 @@ function renderVoiceList(filter = '') {
                 <span class="voice-name">${v.name}</span>
                 <span class="voice-gender">${v.gender}</span>
             `;
-            div.onclick = () => selectVoice(v.id, div);
+            div.onclick = () => selectVoice(v, div);
             container.appendChild(div);
         });
     });
 }
 
-function selectVoice(voiceId, element) {
-    selectedVoice = voiceId;
+function selectVoice(voice, element) {
+    selectedVoice = voice.id;
+    selectedLanguage = languageCatalog[voice.locale] ? voice.locale : selectedLanguage;
+    selectedNarrator = null;
+
+    document.getElementById('languageSelect').value = selectedLanguage;
+    renderNarratorOptions();
+    document.getElementById('narratorSelect').value = '';
+    document.getElementById('langFilter').value = selectedLanguage;
     document.querySelectorAll('.voice-option').forEach(el => el.classList.remove('selected'));
     element.classList.add('selected');
+    updateNarratorCard();
+
     if (selectedPreset) {
         clearPreset();
     }
@@ -74,6 +214,20 @@ function clearPreset() {
 
 function setupEventListeners() {
     document.getElementById('textInput').addEventListener('input', updateCharCount);
+
+    document.getElementById('languageSelect').addEventListener('change', (e) => {
+        selectedLanguage = e.target.value;
+        if (!selectedNarrator) {
+            selectedNarrator = 'male';
+        }
+        renderNarratorOptions();
+        applyNarratorSelection();
+    });
+
+    document.getElementById('narratorSelect').addEventListener('change', (e) => {
+        selectedNarrator = e.target.value || null;
+        applyNarratorSelection();
+    });
 
     document.getElementById('voiceSearch').addEventListener('input', (e) => {
         renderVoiceList(e.target.value);
@@ -113,6 +267,48 @@ function setupEventListeners() {
     });
 }
 
+function applyNarratorSelection() {
+    const narrators = narratorCatalog[selectedLanguage] || {};
+    const narrator = selectedNarrator ? narrators[selectedNarrator] : null;
+
+    if (narrator) {
+        selectedVoice = narrator.voice;
+        setSliderValue('rateSlider', 'rateValue', narrator.rate, '%');
+        setSliderValue('pitchSlider', 'pitchValue', narrator.pitch, 'Hz');
+    }
+
+    const langFilter = document.getElementById('langFilter');
+    if (langFilter) {
+        langFilter.value = selectedLanguage;
+    }
+
+    clearPreset();
+    updateNarratorCard();
+    renderVoiceList(document.getElementById('voiceSearch').value);
+}
+
+function setSliderValue(sliderId, labelId, formattedValue, suffix) {
+    const slider = document.getElementById(sliderId);
+    const parsedValue = parseInt(formattedValue.replace(suffix, ''));
+    slider.value = parsedValue;
+    document.getElementById(labelId).textContent = `${parsedValue >= 0 ? '+' : ''}${parsedValue}${suffix}`;
+}
+
+function updateNarratorCard() {
+    const language = languageCatalog[selectedLanguage];
+    const narrators = narratorCatalog[selectedLanguage] || {};
+    const narrator = selectedNarrator ? narrators[selectedNarrator] : null;
+    const languageLabel = language ? language.label : selectedLanguage;
+
+    document.getElementById('selectedNarratorLabel').textContent = narrator
+        ? `${languageLabel} ${narrator.label}`
+        : `${languageLabel} Custom Voice`;
+    document.getElementById('selectedNarratorDescription').textContent = narrator
+        ? narrator.description
+        : 'Using the selected custom voice from the list';
+    document.getElementById('selectedVoiceName').textContent = selectedVoice;
+}
+
 function updateCharCount() {
     const text = document.getElementById('textInput').value;
     const chars = text.length;
@@ -141,6 +337,8 @@ async function generateSpeech() {
         voice: selectedVoice,
         rate: rate,
         pitch: pitch,
+        language: selectedLanguage,
+        narrator: selectedNarrator,
     };
 
     if (selectedPreset) {
@@ -161,11 +359,9 @@ async function generateSpeech() {
 
         const data = await res.json();
         showResult(data);
-        const voiceInfo = data.voice_used !== selectedVoice && !selectedPreset
-            ? ` (auto-detected voice: ${data.voice_used})`
-            : data.voice_used !== body.voice
-            ? ` (auto-switched to ${data.voice_used} for your text's language)`
-            : '';
+        const voiceInfo = data.voice_used !== body.voice
+            ? ` (voice used: ${data.voice_used})`
+            : ` (${data.voice_used})`;
         showStatus(`Audio generated successfully!${voiceInfo}`, 'success');
     } catch (e) {
         showStatus(`Error: ${e.message}`, 'error');
@@ -205,6 +401,8 @@ async function generateBatch() {
                 voice: selectedVoice,
                 rate: rate,
                 pitch: pitch,
+                language: selectedLanguage,
+                narrator: selectedNarrator,
             }),
         });
 

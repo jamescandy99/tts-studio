@@ -32,36 +32,112 @@ PLATFORM_PRESETS = {
         "label": "YouTube Narration",
         "rate": "+0%",
         "pitch": "+0Hz",
-        "voice": "en-US-GuyNeural",
+        "voice": "en-US-AndrewNeural",
         "description": "Clear, professional narration voice for YouTube videos",
     },
     "tiktok": {
         "label": "TikTok Voiceover",
         "rate": "+10%",
         "pitch": "+5Hz",
-        "voice": "en-US-JennyNeural",
+        "voice": "en-US-EmmaNeural",
         "description": "Energetic, upbeat voice for short-form TikTok content",
     },
     "facebook": {
         "label": "Facebook Stories",
         "rate": "+0%",
         "pitch": "+0Hz",
-        "voice": "en-US-AriaNeural",
+        "voice": "en-US-AvaNeural",
         "description": "Warm, conversational voice for Facebook stories and reels",
     },
     "podcast": {
         "label": "Podcast Style",
         "rate": "-5%",
         "pitch": "-2Hz",
-        "voice": "en-US-DavisNeural",
+        "voice": "en-US-BrianNeural",
         "description": "Calm, measured tone ideal for podcast-style content",
     },
     "dramatic": {
         "label": "Dramatic / Cinematic",
         "rate": "-10%",
         "pitch": "-5Hz",
-        "voice": "en-US-GuyNeural",
+        "voice": "en-US-AndrewNeural",
         "description": "Slow, dramatic delivery for cinematic intros and trailers",
+    },
+}
+
+LANGUAGE_OPTIONS: dict[str, dict[str, str]] = {
+    "en-US": {
+        "label": "English",
+        "native_label": "English",
+        "sample_text": "Welcome to TTS Studio.",
+    },
+    "my-MM": {
+        "label": "Burmese",
+        "native_label": "မြန်မာဘာသာ",
+        "sample_text": "မင်္ဂလာပါ။ TTS Studio မှ ကြိုဆိုပါတယ်။",
+    },
+}
+
+NARRATOR_PRESETS: dict[str, dict[str, dict[str, str]]] = {
+    "en-US": {
+        "male": {
+            "label": "Male",
+            "voice": "en-US-AndrewNeural",
+            "rate": "+0%",
+            "pitch": "+0Hz",
+            "description": "Clear adult male English narrator",
+        },
+        "female": {
+            "label": "Female",
+            "voice": "en-US-EmmaNeural",
+            "rate": "+0%",
+            "pitch": "+0Hz",
+            "description": "Natural adult female English narrator",
+        },
+        "baby_girl": {
+            "label": "Young Baby Girl",
+            "voice": "en-US-AnaNeural",
+            "rate": "+8%",
+            "pitch": "+18Hz",
+            "description": "Bright childlike English girl narrator",
+        },
+        "young_boy": {
+            "label": "Young Boy",
+            "voice": "en-US-EricNeural",
+            "rate": "+6%",
+            "pitch": "+12Hz",
+            "description": "Youthful English boy-style narrator",
+        },
+    },
+    "my-MM": {
+        "male": {
+            "label": "Male",
+            "voice": "my-MM-ThihaNeural",
+            "rate": "+0%",
+            "pitch": "+0Hz",
+            "description": "Clear adult male Burmese narrator",
+        },
+        "female": {
+            "label": "Female",
+            "voice": "my-MM-NilarNeural",
+            "rate": "+0%",
+            "pitch": "+0Hz",
+            "description": "Natural adult female Burmese narrator",
+        },
+        "baby_girl": {
+            "label": "Young Baby Girl",
+            "voice": "my-MM-NilarNeural",
+            "rate": "+8%",
+            "pitch": "+18Hz",
+            "description": "Childlike Burmese girl narrator using a brighter tone",
+        },
+        "young_boy": {
+            "label": "Young Boy",
+            "voice": "my-MM-ThihaNeural",
+            "rate": "+6%",
+            "pitch": "+12Hz",
+            "description": "Youthful Burmese boy-style narrator using a brighter tone",
+        },
     },
 }
 
@@ -191,19 +267,44 @@ def get_voice_for_text(text: str, current_voice: str) -> str:
     return DEFAULT_VOICES.get(locale, current_voice)
 
 
+def resolve_voice_settings(
+    language: str | None,
+    narrator: str | None,
+    current_voice: str,
+    current_rate: str,
+    current_pitch: str,
+) -> tuple[str, str, str]:
+    if language is None or narrator is None:
+        return current_voice, current_rate, current_pitch
+
+    narrator_options = NARRATOR_PRESETS.get(language)
+    if narrator_options is None:
+        return current_voice, current_rate, current_pitch
+
+    preset = narrator_options.get(narrator)
+    if preset is None:
+        return current_voice, current_rate, current_pitch
+
+    return preset["voice"], preset["rate"], preset["pitch"]
+
+
 class TTSRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=10000)
-    voice: str = "en-US-GuyNeural"
+    voice: str = "en-US-AndrewNeural"
     rate: str = "+0%"
     pitch: str = "+0Hz"
     platform: str | None = None
+    language: str | None = "en-US"
+    narrator: str | None = "male"
 
 
 class BatchTTSRequest(BaseModel):
     texts: list[str] = Field(..., min_length=1)
-    voice: str = "en-US-GuyNeural"
+    voice: str = "en-US-AndrewNeural"
     rate: str = "+0%"
     pitch: str = "+0Hz"
+    language: str | None = "en-US"
+    narrator: str | None = "male"
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -233,6 +334,11 @@ async def get_presets():
     return {"presets": PLATFORM_PRESETS}
 
 
+@app.get("/api/narrators")
+async def get_narrators():
+    return {"languages": LANGUAGE_OPTIONS, "narrators": NARRATOR_PRESETS}
+
+
 @app.post("/api/synthesize")
 async def synthesize(req: TTSRequest):
     if req.platform and req.platform in PLATFORM_PRESETS:
@@ -240,8 +346,17 @@ async def synthesize(req: TTSRequest):
         req.voice = preset["voice"]
         req.rate = preset["rate"]
         req.pitch = preset["pitch"]
+        req.language = None
+        req.narrator = None
 
-    resolved_voice = get_voice_for_text(req.text, req.voice)
+    req.voice, req.rate, req.pitch = resolve_voice_settings(
+        req.language,
+        req.narrator,
+        req.voice,
+        req.rate,
+        req.pitch,
+    )
+    resolved_voice = req.voice if req.language else get_voice_for_text(req.text, req.voice)
 
     file_id = str(uuid.uuid4())
     output_path = OUTPUT_DIR / f"{file_id}.mp3"
@@ -267,6 +382,8 @@ async def synthesize(req: TTSRequest):
         "estimated_duration_seconds": duration_estimate,
         "download_url": f"/api/download/{file_id}",
         "voice_used": resolved_voice,
+        "language": req.language,
+        "narrator": req.narrator,
     }
 
 
@@ -278,13 +395,20 @@ async def batch_synthesize(req: BatchTTSRequest):
             continue
         file_id = str(uuid.uuid4())
         output_path = OUTPUT_DIR / f"{file_id}.mp3"
-        resolved_voice = get_voice_for_text(text.strip(), req.voice)
+        request_voice, request_rate, request_pitch = resolve_voice_settings(
+            req.language,
+            req.narrator,
+            req.voice,
+            req.rate,
+            req.pitch,
+        )
+        resolved_voice = request_voice if req.language else get_voice_for_text(text.strip(), request_voice)
         try:
             communicate = edge_tts.Communicate(
                 text=text.strip(),
                 voice=resolved_voice,
-                rate=req.rate,
-                pitch=req.pitch,
+                rate=request_rate,
+                pitch=request_pitch,
             )
             await communicate.save(str(output_path))
             results.append({
@@ -292,6 +416,7 @@ async def batch_synthesize(req: BatchTTSRequest):
                 "file_id": file_id,
                 "text_preview": text.strip()[:80],
                 "download_url": f"/api/download/{file_id}",
+                "voice_used": resolved_voice,
             })
         except Exception:
             results.append({"index": i, "error": f"Failed to generate segment {i}"})

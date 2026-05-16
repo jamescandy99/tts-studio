@@ -71,6 +71,47 @@ body {
     padding: 1.5rem;
 }
 
+.voice-builder-card { margin-bottom: 1.5rem; }
+
+.voice-builder-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.selected-narrator-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.selected-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.selected-description {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-top: 0.2rem;
+}
+
+.selected-voice {
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+}
+
 .card-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -439,4 +480,7 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 480px) {
     .controls-row { grid-template-columns: 1fr; }
     .presets-grid { grid-template-columns: 1fr 1fr; }
+    .voice-builder-grid { grid-template-columns: 1fr; }
+    .selected-narrator-card { align-items: flex-start; flex-direction: column; }
+    .selected-voice { text-align: left; white-space: normal; }
 }
