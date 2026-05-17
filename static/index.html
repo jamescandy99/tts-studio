@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TTS Studio — Text to Speech for Creators</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=20260517">
 </head>
 <body>
 
@@ -48,6 +49,36 @@
                     <div class="preset-label">Dramatic</div>
                     <div class="preset-desc">Cinematic delivery</div>
                 </button>
+            </div>
+        </div>
+
+        <!-- Language and Narrator -->
+        <div class="card voice-builder-card">
+            <div class="card-title">Language & Narrator</div>
+            <div class="voice-builder-grid">
+                <div>
+                    <label for="languageSelect">Language</label>
+                    <select id="languageSelect">
+                        <option value="en-US">English</option>
+                        <option value="my-MM" lang="my">Burmese / မြန်မာဘာသာ</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="narratorSelect">Narrator</label>
+                    <select id="narratorSelect">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="baby_girl">Young Baby Girl</option>
+                        <option value="young_boy">Young Boy</option>
+                    </select>
+                </div>
+            </div>
+            <div class="selected-narrator-card" id="selectedNarratorCard">
+                <div>
+                    <span class="selected-label" id="selectedNarratorLabel">English Male</span>
+                    <span class="selected-description" id="selectedNarratorDescription">Clear adult male English narrator</span>
+                </div>
+                <span class="selected-voice" id="selectedVoiceName">en-US-AndrewNeural</span>
             </div>
         </div>
 
@@ -167,6 +198,6 @@
     </div>
 </main>
 
-<script src="/static/app.js"></script>
+<script src="/static/app.js?v=20260517"></script>
 </body>
 </html>

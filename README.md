@@ -6,7 +6,8 @@ A professional Text-to-Speech web application built for content creators on **Yo
 
 ## Features
 
-- **300+ Natural Voices** — Powered by Microsoft Edge TTS with voices in 60+ languages
+- **English & Burmese TTS** — Language selector with curated English and Burmese voice options
+- **Narrator Presets** — Male, Female, Young Baby Girl, and Young Boy narrator styles
 - **Platform Presets** — One-click voice settings optimized for YouTube narration, TikTok voiceovers, Facebook stories, podcasts, and dramatic/cinematic content
 - **Adjustable Controls** — Fine-tune speech rate (-50% to +50%) and pitch (-20Hz to +20Hz)
 - **Batch Processing** — Split long scripts by paragraph and generate individual audio segments
@@ -46,11 +47,12 @@ docker run -p 8000:8000 tts-studio
 
 ## Usage
 
-1. **Choose a Platform Preset** or select a custom voice from the sidebar
-2. **Type or paste your script** in the text area
-3. **Adjust rate and pitch** using the sliders
-4. **Click "Generate Speech"** to create your audio
-5. **Preview and download** the MP3 file
+1. **Choose English or Burmese** and pick a narrator style: Male, Female, Young Baby Girl, or Young Boy
+2. **Choose a Platform Preset** or select a custom voice from the sidebar
+3. **Type or paste your script** in the text area
+4. **Adjust rate and pitch** using the sliders
+5. **Click "Generate Speech"** to create your audio
+6. **Preview and download** the MP3 file
 
 ### Batch Mode
 
@@ -62,6 +64,7 @@ For longer scripts, separate paragraphs with blank lines and click **"Batch Gene
 |---|---|---|
 | `/api/voices` | GET | List all available voices |
 | `/api/presets` | GET | Get platform presets |
+| `/api/narrators` | GET | Get supported languages and narrator presets |
 | `/api/synthesize` | POST | Generate speech from text |
 | `/api/batch` | POST | Batch generate from paragraphs |
 | `/api/download/{id}` | GET | Download generated audio |
