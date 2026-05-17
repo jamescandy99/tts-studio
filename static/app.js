@@ -121,6 +121,7 @@ function renderLanguageOptions() {
     Object.entries(languageCatalog).forEach(([locale, language]) => {
         const opt = document.createElement('option');
         opt.value = locale;
+        opt.lang = locale === 'my-MM' ? 'my' : 'en';
         opt.textContent = language.label === language.native_label
             ? language.label
             : `${language.label} / ${language.native_label}`;
