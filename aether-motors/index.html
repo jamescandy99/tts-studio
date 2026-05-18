@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aether Motors — Electric. Elevated.</title>
+  <meta name="description" content="Precision-engineered electric motor cars that deliver extraordinary performance, refined luxury, and true sustainability.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ========== HEADER / NAVIGATION ========== -->
+  <header class="header" id="header">
+    <div class="header__inner">
+      <a href="#" class="header__logo">
+        <svg class="header__logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 2L36 12v16L20 38 4 28V12L20 2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M20 10l8 5v10l-8 5-8-5V15l8-5z" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          <path d="M20 10v20M12 15l16 10M28 15L12 25" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+        </svg>
+        <span class="header__logo-text">AETHER</span>
+      </a>
+      <nav class="header__nav" id="mainNav">
+        <a href="#models" class="header__nav-link">Models</a>
+        <a href="#benefits" class="header__nav-link">Why Aether</a>
+        <a href="#ownership" class="header__nav-link">Ownership</a>
+        <a href="#testimonials" class="header__nav-link">Stories</a>
+      </nav>
+      <div class="header__actions">
+        <a href="#configure" class="header__configure">Configure</a>
+        <a href="#cta" class="header__cta-btn">Book a Test Drive</a>
+      </div>
+      <button class="header__hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <nav class="mobile-menu__nav">
+        <a href="#models" class="mobile-menu__link">Models</a>
+        <a href="#benefits" class="mobile-menu__link">Why Aether</a>
+        <a href="#ownership" class="mobile-menu__link">Ownership</a>
+        <a href="#testimonials" class="mobile-menu__link">Stories</a>
+        <a href="#configure" class="mobile-menu__link">Configure</a>
+        <a href="#cta" class="mobile-menu__cta">Book a Test Drive</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========== HERO SECTION ========== -->
+  <section class="hero" id="hero">
+    <div class="hero__bg">
+      <div class="hero__gradient"></div>
+      <div class="hero__particles" id="heroParticles"></div>
+    </div>
+    <div class="hero__content">
+      <h1 class="hero__headline reveal-up">Electric. Elevated.</h1>
+      <p class="hero__subheadline reveal-up delay-1">Precision-engineered electric motor cars that deliver extraordinary performance, refined luxury, and true sustainability.</p>
+      <div class="hero__ctas reveal-up delay-2">
+        <a href="#cta" class="btn btn--primary btn--lg">Book Your Test Drive</a>
+        <a href="#models" class="btn btn--outline btn--lg">Explore the Models</a>
+      </div>
+      <div class="hero__trust reveal-up delay-3">
+        <span class="hero__trust-item">Starting from $68,900</span>
+        <span class="hero__trust-divider">•</span>
+        <span class="hero__trust-item">Up to 520 km range</span>
+      </div>
+    </div>
+    <div class="hero__car-visual">
+      <div class="hero__car-silhouette"></div>
+    </div>
+    <div class="hero__scroll-indicator">
+      <span>Scroll to explore</span>
+      <div class="hero__scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ========== TRUST ELEMENTS ========== -->
+  <section class="trust" id="trust">
+    <div class="container">
+      <div class="trust__grid">
+        <div class="trust__item reveal-up">
+          <div class="trust__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="trust__text">
+            <span class="trust__stat">4.9/5</span>
+            <span class="trust__label">Rated by 2,800+ drivers</span>
+          </div>
+        </div>
+        <div class="trust__item reveal-up delay-1">
+          <div class="trust__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="6"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/></svg>
+          </div>
+          <div class="trust__text">
+            <span class="trust__stat">2025 Winner</span>
+            <span class="trust__label">Global EV Design Award</span>
+          </div>
+        </div>
+        <div class="trust__item reveal-up delay-2">
+          <div class="trust__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="trust__text">
+            <span class="trust__stat">Featured in</span>
+            <span class="trust__label">Forbes, Wired & Top Gear</span>
+          </div>
+        </div>
+        <div class="trust__item reveal-up delay-3">
+          <div class="trust__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="trust__text">
+            <span class="trust__stat">98%</span>
+            <span class="trust__label">Would recommend Aether</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== MODELS OVERVIEW ========== -->
+  <section class="models" id="models">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-label">The Aether Lineup</span>
+        <h2 class="section-title">Three distinct expressions of electric excellence.</h2>
+      </div>
+      <div class="models__grid">
+        <!-- Aether One -->
+        <div class="models__card reveal-up">
+          <div class="models__card-image">
+            <div class="models__car-render models__car-render--one"></div>
+            <div class="models__card-badge">Most Popular</div>
+          </div>
+          <div class="models__card-body">
+            <h3 class="models__card-name">Aether One</h3>
+            <p class="models__card-tagline">The refined daily driver</p>
+            <div class="models__card-specs">
+              <div class="models__spec">
+                <span class="models__spec-value">480 km</span>
+                <span class="models__spec-label">Range</span>
+              </div>
+              <div class="models__spec">
+                <span class="models__spec-value">4.2s</span>
+                <span class="models__spec-label">0–100 km/h</span>
+              </div>
+              <div class="models__spec">
+                <span class="models__spec-value">220 km/h</span>
+                <span class="models__spec-label">Top Speed</span>
+              </div>
+            </div>
+            <div class="models__card-footer">
+              <span class="models__price">From $68,900</span>
+              <a href="#configure" class="btn btn--secondary btn--sm">Configure</a>
+            </div>
+          </div>
+        </div>
+        <!-- Aether Sport -->
+        <div class="models__card reveal-up delay-1">
+          <div class="models__card-image">
+            <div class="models__car-render models__car-render--sport"></div>
+          </div>
+          <div class="models__card-body">
+            <h3 class="models__card-name">Aether Sport</h3>
+            <p class="models__card-tagline">Pure adrenaline, zero emissions</p>
+            <div class="models__card-specs">
+              <div class="models__spec">
+                <span class="models__spec-value">420 km</span>
+                <span class="models__spec-label">Range</span>
+              </div>
+              <div class="models__spec">
+                <span class="models__spec-value">2.9s</span>
+                <span class="models__spec-label">0–100 km/h</span>
+              </div>
+              <div class="models__spec">
+                <span class="models__spec-value">280 km/h</span>
+                <span class="models__spec-label">Top Speed</span>
+              </div>
+            </div>
+            <div class="models__card-footer">
+              <span class="models__price">From $89,500</span>
+              <a href="#configure" class="btn btn--secondary btn--sm">Configure</a>
+            </div>
+          </div>
+        </div>
+        <!-- Aether Grand Tourer -->
+        <div class="models__card reveal-up delay-2">
+          <div class="models__card-image">
+            <div class="models__car-render models__car-render--gt"></div>
+          </div>
+          <div class="models__card-body">
+            <h3 class="models__card-name">Aether Grand Tourer</h3>
+            <p class="models__card-tagline">The art of the long drive</p>
+            <div class="models__card-specs">
+              <div class="models__spec">
+                <span class="models__spec-value">520 km</span>
+                <span class="models__spec-label">Range</span>
+              </div>
+              <div class="models__spec">
+                <span class="models__spec-value">3.5s</span>
+                <span class="models__spec-label">0–100 km/h</span>
+              </div>
+              <div class="models__spec">
+                <span class="models__spec-value">250 km/h</span>
+                <span class="models__spec-label">Top Speed</span>
+              </div>
+            </div>
+            <div class="models__card-footer">
+              <span class="models__price">From $112,000</span>
+              <a href="#configure" class="btn btn--secondary btn--sm">Configure</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== OWNERSHIP EXPERIENCE ========== -->
+  <section class="ownership" id="ownership">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-label">The Aether Experience</span>
+        <h2 class="section-title">Ownership, elevated at every touchpoint.</h2>
+      </div>
+      <div class="ownership__grid">
+        <div class="ownership__card reveal-up">
+          <div class="ownership__icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="22" width="36" height="20" rx="3"/><path d="M16 22V14a8 8 0 0 1 16 0v8"/><circle cx="24" cy="33" r="3"/></svg>
+          </div>
+          <h3 class="ownership__card-title">White-Glove Delivery</h3>
+          <p class="ownership__card-desc">Your Aether arrives at your door, fully charged, with a personal brand ambassador to walk you through every detail.</p>
+        </div>
+        <div class="ownership__card reveal-up delay-1">
+          <div class="ownership__icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 36V24l10-12 10 12v12"/><path d="M20 36v-8h8v8"/><circle cx="24" cy="20" r="2"/></svg>
+          </div>
+          <h3 class="ownership__card-title">Home Charging Installation</h3>
+          <p class="ownership__card-desc">Complimentary home charger installation by certified technicians. Wake up to a full charge, every morning.</p>
+        </div>
+        <div class="ownership__card reveal-up delay-2">
+          <div class="ownership__icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8h24v32H12z"/><path d="M18 16h12M18 22h12M18 28h8"/><circle cx="24" cy="36" r="2"/></svg>
+          </div>
+          <h3 class="ownership__card-title">5-Year Complimentary Maintenance</h3>
+          <p class="ownership__card-desc">Every scheduled service covered for five full years. Predictive diagnostics mean we fix things before they become problems.</p>
+        </div>
+        <div class="ownership__card reveal-up delay-3">
+          <div class="ownership__icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="24" cy="24" r="18"/><path d="M24 6v4M24 38v4M6 24h4M38 24h4M10 10l3 3M35 35l3 3M10 38l3-3M35 13l3-3"/><circle cx="24" cy="24" r="6"/></svg>
+          </div>
+          <h3 class="ownership__card-title">Aether Charging Network</h3>
+          <p class="ownership__card-desc">Exclusive access to 12,000+ ultra-fast charging stations across 28 countries. 10–80% in under 20 minutes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== BENEFITS SECTION ========== -->
+  <section class="benefits" id="benefits">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-label">Why Aether?</span>
+        <h2 class="section-title">Engineered to exceed every expectation.</h2>
+      </div>
+      <div class="benefits__grid">
+        <div class="benefits__card reveal-up">
+          <div class="benefits__number">01</div>
+          <h3 class="benefits__card-title">Unmatched Performance</h3>
+          <p class="benefits__card-desc">Instant torque, precise handling, and a signature electric motor soundscape that makes every drive unforgettable.</p>
+          <div class="benefits__line"></div>
+        </div>
+        <div class="benefits__card reveal-up delay-1">
+          <div class="benefits__number">02</div>
+          <h3 class="benefits__card-title">Refined Luxury</h3>
+          <p class="benefits__card-desc">Minimalist interiors crafted from premium sustainable materials with advanced haptic interfaces and ambient intelligence.</p>
+          <div class="benefits__line"></div>
+        </div>
+        <div class="benefits__card reveal-up delay-2">
+          <div class="benefits__number">03</div>
+          <h3 class="benefits__card-title">True Efficiency</h3>
+          <p class="benefits__card-desc">Industry-leading range and energy consumption with intelligent thermal management and regenerative braking systems.</p>
+          <div class="benefits__line"></div>
+        </div>
+        <div class="benefits__card reveal-up delay-3">
+          <div class="benefits__number">04</div>
+          <h3 class="benefits__card-title">Effortless Ownership</h3>
+          <p class="benefits__card-desc">Over-the-air updates, predictive maintenance, and white-glove support that anticipates your needs before you do.</p>
+          <div class="benefits__line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== TESTIMONIALS ========== -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-label">Owner Stories</span>
+        <h2 class="section-title">Hear it from the people who drive Aether.</h2>
+      </div>
+      <div class="testimonials__grid">
+        <div class="testimonials__card reveal-up">
+          <div class="testimonials__quote-mark">&ldquo;</div>
+          <blockquote class="testimonials__quote">The Aether Sport transformed how I experience driving. The performance is breathtaking, yet it feels incredibly refined. Best decision I've made in years.</blockquote>
+          <div class="testimonials__author">
+            <div class="testimonials__avatar testimonials__avatar--1"></div>
+            <div class="testimonials__author-info">
+              <span class="testimonials__name">Marcus Chen</span>
+              <span class="testimonials__title">Entrepreneur • Singapore</span>
+              <span class="testimonials__meta">Switched from Porsche • 18 months ownership</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonials__card reveal-up delay-1">
+          <div class="testimonials__quote-mark">&ldquo;</div>
+          <blockquote class="testimonials__quote">I was skeptical about EVs until I drove the Grand Tourer. The range is genuinely exceptional, and the interior is the most beautiful space I've ever sat in.</blockquote>
+          <div class="testimonials__author">
+            <div class="testimonials__avatar testimonials__avatar--2"></div>
+            <div class="testimonials__author-info">
+              <span class="testimonials__name">Dr. Elena Voss</span>
+              <span class="testimonials__title">Architect • Munich</span>
+              <span class="testimonials__meta">Switched from Mercedes • 12 months ownership</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonials__card reveal-up delay-2">
+          <div class="testimonials__quote-mark">&ldquo;</div>
+          <blockquote class="testimonials__quote">The ownership experience sets Aether apart. From delivery day to every OTA update, they've thought of everything. It genuinely feels like driving the future.</blockquote>
+          <div class="testimonials__author">
+            <div class="testimonials__avatar testimonials__avatar--3"></div>
+            <div class="testimonials__author-info">
+              <span class="testimonials__name">James Okafor</span>
+              <span class="testimonials__title">Creative Director • London</span>
+              <span class="testimonials__meta">Switched from Tesla • 24 months ownership</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FAQs ========== -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-label">Frequently Asked</span>
+        <h2 class="section-title">Everything you need to know.</h2>
+      </div>
+      <div class="faq__list reveal-up">
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>What is the real-world range of an Aether?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Real-world range varies by model: the Aether One achieves 430–480 km, the Sport 380–420 km, and the Grand Tourer 470–520 km under normal driving conditions. Our intelligent thermal management and regenerative braking systems optimize efficiency continuously.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>How long does charging take?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>On the Aether Charging Network, you can go from 10% to 80% in under 20 minutes. Home charging with the included Level 2 charger provides a full charge overnight (approximately 8–10 hours from empty).</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>What does ownership actually cost?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Aether ownership is designed to be transparent. With 5 years of complimentary maintenance, no fuel costs, and lower insurance premiums, most owners report 40–60% lower total cost of ownership compared to equivalent luxury ICE vehicles.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>Can I get home charging installed?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Absolutely. Every Aether purchase includes complimentary home charger installation by our certified technicians. We handle the survey, electrical work, and setup — you just tell us where you'd like it.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>What is the warranty and service experience like?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Every Aether comes with an 8-year/160,000 km battery warranty and a 5-year comprehensive vehicle warranty. Service is handled by mobile technicians who come to you, or at our boutique service centres worldwide.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>How does Aether compare to other premium EVs?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Aether consistently outperforms competitors on range efficiency, interior quality, and ownership satisfaction. Our 98% recommendation rate and 4.9/5 owner rating speak for themselves. We invite you to book a test drive and experience the difference.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>Do you offer financing or leasing?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Yes. We offer flexible financing from 1.9% APR and competitive leasing options. Our ownership specialists will create a tailored plan that works for your budget and lifestyle.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question" aria-expanded="false">
+            <span>What happens if I want to upgrade later?</span>
+            <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="faq__answer">
+            <p>Our Aether Upgrade Programme offers guaranteed future value and priority access to new models. Simply return your current Aether and seamlessly transition to the latest model with preferential pricing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FINAL CTA ========== -->
+  <section class="final-cta" id="cta">
+    <div class="container">
+      <div class="final-cta__content reveal-up">
+        <h2 class="final-cta__headline">Ready to experience the future of driving?</h2>
+        <p class="final-cta__sub">Book a personalized test drive or speak with an Aether specialist today.</p>
+        <div class="final-cta__buttons">
+          <a href="#" class="btn btn--primary btn--xl">Book a Test Drive</a>
+          <a href="#" class="btn btn--outline btn--xl">Configure Your Aether</a>
+          <a href="#" class="btn btn--ghost btn--xl">Talk to an Expert</a>
+        </div>
+        <p class="final-cta__reassurance">No obligation &bull; Flexible scheduling &bull; Complimentary charging session included</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="#" class="footer__logo">
+            <svg class="footer__logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 2L36 12v16L20 38 4 28V12L20 2z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <path d="M20 10l8 5v10l-8 5-8-5V15l8-5z" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            </svg>
+            <span>AETHER</span>
+          </a>
+          <p class="footer__tagline">Electric. Elevated.</p>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__heading">Models</h4>
+          <a href="#" class="footer__link">Aether One</a>
+          <a href="#" class="footer__link">Aether Sport</a>
+          <a href="#" class="footer__link">Aether Grand Tourer</a>
+          <a href="#" class="footer__link">Compare Models</a>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__heading">Ownership</h4>
+          <a href="#" class="footer__link">Charging Network</a>
+          <a href="#" class="footer__link">Financing</a>
+          <a href="#" class="footer__link">Service & Warranty</a>
+          <a href="#" class="footer__link">Upgrade Programme</a>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__heading">Company</h4>
+          <a href="#" class="footer__link">About Aether</a>
+          <a href="#" class="footer__link">Careers</a>
+          <a href="#" class="footer__link">Newsroom</a>
+          <a href="#" class="footer__link">Contact</a>
+        </div>
+        <div class="footer__links-group">
+          <h4 class="footer__heading">Connect</h4>
+          <a href="#" class="footer__link">Instagram</a>
+          <a href="#" class="footer__link">LinkedIn</a>
+          <a href="#" class="footer__link">YouTube</a>
+          <a href="#" class="footer__link">X (Twitter)</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2025 Aether Motors. All rights reserved.</p>
+        <div class="footer__legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Settings</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky Mobile CTA -->
+  <div class="mobile-sticky-cta" id="mobileCta">
+    <a href="#cta" class="btn btn--primary btn--mobile-sticky">Book Test Drive</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
