@@ -2,9 +2,12 @@ const API = '';
 let allVoices = {};
 let selectedVoice = 'en-US-GuyNeural';
 let selectedPreset = null;
+let selectedNarrator = 'male';
+let narratorData = {};
 
 document.addEventListener('DOMContentLoaded', () => {
     loadVoices();
+    loadNarrators();
     setupEventListeners();
     updateCharCount();
 });
@@ -18,6 +21,36 @@ async function loadVoices() {
     } catch (e) {
         console.error('Failed to load voices:', e);
     }
+}
+
+async function loadNarrators() {
+    try {
+        const res = await fetch(`${API}/api/narrators`);
+        narratorData = await res.json();
+        updateNarratorLabels();
+    } catch (e) {
+        console.error('Failed to load narrators:', e);
+    }
+}
+
+function updateNarratorLabels() {
+    const targetLang = document.getElementById('targetLang').value;
+    const narrators = narratorData.narrators && narratorData.narrators[targetLang];
+    if (!narrators) return;
+
+    document.querySelectorAll('.narrator-btn').forEach(btn => {
+        const key = btn.dataset.narrator;
+        const config = narrators[key];
+        if (config) {
+            const labelEl = btn.querySelector('.narrator-label');
+            if (targetLang === 'my-MM') {
+                const enLabels = {male: 'Boy', female: 'Girl', baby_boy: 'Baby Boy', baby_girl: 'Baby Girl'};
+                labelEl.textContent = `${enLabels[key]} (${config.label})`;
+            } else {
+                labelEl.textContent = config.label;
+            }
+        }
+    });
 }
 
 function renderVoiceList(filter = '') {
@@ -102,6 +135,40 @@ function setupEventListeners() {
         });
     });
 
+    document.querySelectorAll('.narrator-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedNarrator = btn.dataset.narrator;
+            document.querySelectorAll('.narrator-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+
+    document.getElementById('swapLangBtn').addEventListener('click', () => {
+        const src = document.getElementById('sourceLang');
+        const tgt = document.getElementById('targetLang');
+        const tmp = src.value;
+        src.value = tgt.value;
+        tgt.value = tmp;
+        updateNarratorLabels();
+    });
+
+    document.getElementById('targetLang').addEventListener('change', updateNarratorLabels);
+
+    document.getElementById('useTranslationBtn').addEventListener('click', () => {
+        const translated = document.getElementById('translatedText').textContent;
+        if (translated) {
+            document.getElementById('textInput').value = translated;
+            updateCharCount();
+            const src = document.getElementById('sourceLang');
+            const tgt = document.getElementById('targetLang');
+            const tmp = src.value;
+            src.value = tgt.value;
+            tgt.value = tmp;
+            updateNarratorLabels();
+            document.getElementById('translationPreview').style.display = 'none';
+        }
+    });
+
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             const target = tab.dataset.tab;
@@ -121,6 +188,116 @@ function updateCharCount() {
     document.getElementById('charCount').textContent = `${chars}/10000 chars | ~${words} words | ~${estDuration}s`;
 }
 
+async function translateText() {
+    const text = document.getElementById('textInput').value.trim();
+    if (!text) {
+        showStatus('Please enter some text first.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('translateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Translating...';
+    hideStatus();
+
+    const sourceLang = document.getElementById('sourceLang').value;
+    const targetLang = document.getElementById('targetLang').value;
+
+    try {
+        const res = await fetch(`${API}/api/translate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                text: text,
+                source_lang: sourceLang,
+                target_lang: targetLang,
+            }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Translation failed');
+        }
+
+        const data = await res.json();
+        document.getElementById('translatedText').textContent = data.translated_text;
+        document.getElementById('translationPreview').style.display = 'block';
+        showStatus('Translation complete!', 'success');
+    } catch (e) {
+        showStatus(`Error: ${e.message}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔄</span> Translate';
+    }
+}
+
+async function translateAndSpeak() {
+    const text = document.getElementById('textInput').value.trim();
+    if (!text) {
+        showStatus('Please enter some text first.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('translateSpeakBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Translating & Generating...';
+    hideStatus();
+
+    const sourceLang = document.getElementById('sourceLang').value;
+    const targetLang = document.getElementById('targetLang').value;
+
+    try {
+        const transRes = await fetch(`${API}/api/translate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                text: text,
+                source_lang: sourceLang,
+                target_lang: targetLang,
+            }),
+        });
+
+        if (!transRes.ok) {
+            const err = await transRes.json();
+            throw new Error(err.detail || 'Translation failed');
+        }
+
+        const transData = await transRes.json();
+        document.getElementById('translatedText').textContent = transData.translated_text;
+        document.getElementById('translationPreview').style.display = 'block';
+
+        const rate = `${parseInt(document.getElementById('rateSlider').value) >= 0 ? '+' : ''}${document.getElementById('rateSlider').value}%`;
+        const pitch = `${parseInt(document.getElementById('pitchSlider').value) >= 0 ? '+' : ''}${document.getElementById('pitchSlider').value}Hz`;
+
+        const synthRes = await fetch(`${API}/api/synthesize`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                text: transData.translated_text,
+                voice: selectedVoice,
+                rate: rate,
+                pitch: pitch,
+                language: targetLang,
+                narrator: selectedNarrator,
+            }),
+        });
+
+        if (!synthRes.ok) {
+            const err = await synthRes.json();
+            throw new Error(err.detail || 'Speech generation failed');
+        }
+
+        const synthData = await synthRes.json();
+        showResult(synthData);
+        showStatus(`Translated and generated speech with ${synthData.voice_used}!`, 'success');
+    } catch (e) {
+        showStatus(`Error: ${e.message}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🌐</span> Translate & Speak';
+    }
+}
+
 async function generateSpeech() {
     const text = document.getElementById('textInput').value.trim();
     if (!text) {
@@ -136,11 +313,15 @@ async function generateSpeech() {
     const rate = `${parseInt(document.getElementById('rateSlider').value) >= 0 ? '+' : ''}${document.getElementById('rateSlider').value}%`;
     const pitch = `${parseInt(document.getElementById('pitchSlider').value) >= 0 ? '+' : ''}${document.getElementById('pitchSlider').value}Hz`;
 
+    const targetLang = document.getElementById('targetLang').value;
+
     const body = {
         text: text,
         voice: selectedVoice,
         rate: rate,
         pitch: pitch,
+        language: targetLang,
+        narrator: selectedNarrator,
     };
 
     if (selectedPreset) {
@@ -195,6 +376,7 @@ async function generateBatch() {
 
     const rate = `${parseInt(document.getElementById('rateSlider').value) >= 0 ? '+' : ''}${document.getElementById('rateSlider').value}%`;
     const pitch = `${parseInt(document.getElementById('pitchSlider').value) >= 0 ? '+' : ''}${document.getElementById('pitchSlider').value}Hz`;
+    const targetLang = document.getElementById('targetLang').value;
 
     try {
         const res = await fetch(`${API}/api/batch`, {
@@ -205,6 +387,8 @@ async function generateBatch() {
                 voice: selectedVoice,
                 rate: rate,
                 pitch: pitch,
+                language: targetLang,
+                narrator: selectedNarrator,
             }),
         });
 

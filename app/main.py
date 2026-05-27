@@ -6,13 +6,14 @@ import unicodedata
 from pathlib import Path
 
 import edge_tts
+from deep_translator import GoogleTranslator
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-app = FastAPI(title="TTS Studio", version="1.0.0")
+app = FastAPI(title="TTS Studio", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -92,6 +93,82 @@ SCRIPT_TO_LOCALE: dict[str, str] = {
     "GREEK": "el-GR",
     "CYRILLIC": "ru-RU",
 }
+
+NARRATORS: dict[str, dict[str, dict]] = {
+    "en-US": {
+        "male": {
+            "voice": "en-US-GuyNeural",
+            "label": "Boy",
+            "rate_offset": "+0%",
+            "pitch_offset": "+0Hz",
+        },
+        "female": {
+            "voice": "en-US-JennyNeural",
+            "label": "Girl",
+            "rate_offset": "+0%",
+            "pitch_offset": "+0Hz",
+        },
+        "baby_boy": {
+            "voice": "en-US-AnaNeural",
+            "label": "Baby Boy",
+            "rate_offset": "+5%",
+            "pitch_offset": "+15Hz",
+        },
+        "baby_girl": {
+            "voice": "en-US-AnaNeural",
+            "label": "Baby Girl",
+            "rate_offset": "+8%",
+            "pitch_offset": "+18Hz",
+        },
+    },
+    "my-MM": {
+        "male": {
+            "voice": "my-MM-ThihaNeural",
+            "label": "\u101a\u1031\u102c\u1000\u103a\u1039\u1019\u102c\u1038\u101c\u1031\u1038",
+            "rate_offset": "+0%",
+            "pitch_offset": "+0Hz",
+        },
+        "female": {
+            "voice": "my-MM-NilarNeural",
+            "label": "\u1019\u102d\u1014\u103a\u1038\u1000\u101c\u1031\u1038",
+            "rate_offset": "+0%",
+            "pitch_offset": "+0Hz",
+        },
+        "baby_boy": {
+            "voice": "my-MM-ThihaNeural",
+            "label": "\u1000\u101c\u1031\u1038\u101a\u1031\u102c\u1000\u103a\u1039\u1019\u102c\u1038",
+            "rate_offset": "+8%",
+            "pitch_offset": "+18Hz",
+        },
+        "baby_girl": {
+            "voice": "my-MM-NilarNeural",
+            "label": "\u1000\u101c\u1031\u1038\u1019\u102d\u1014\u103a\u1038\u1000\u101c\u1031\u1038",
+            "rate_offset": "+8%",
+            "pitch_offset": "+18Hz",
+        },
+    },
+}
+
+LANG_LABELS: dict[str, str] = {
+    "en-US": "English",
+    "my-MM": "\u1019\u103c\u1014\u103a\u1019\u102c\u1018\u102c\u101e\u102c (Burmese)",
+}
+
+TRANSLATION_MAP: dict[str, str] = {
+    "en-US": "en",
+    "my-MM": "my",
+}
+
+
+def resolve_voice_settings(
+    language: str, narrator: str, voice: str, rate: str, pitch: str
+) -> tuple[str, str, str]:
+    lang_narrators = NARRATORS.get(language, {})
+    config = lang_narrators.get(narrator)
+    if config:
+        return (config["voice"], config["rate_offset"], config["pitch_offset"])
+    return (voice, rate, pitch)
+
 
 DEFAULT_VOICES: dict[str, str] = {
     "my-MM": "my-MM-ThihaNeural",
@@ -197,6 +274,8 @@ class TTSRequest(BaseModel):
     rate: str = "+0%"
     pitch: str = "+0Hz"
     platform: str | None = None
+    language: str | None = None
+    narrator: str | None = None
 
 
 class BatchTTSRequest(BaseModel):
@@ -204,12 +283,28 @@ class BatchTTSRequest(BaseModel):
     voice: str = "en-US-GuyNeural"
     rate: str = "+0%"
     pitch: str = "+0Hz"
+    language: str | None = None
+    narrator: str | None = None
+
+
+class TranslateRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=10000)
+    source_lang: str = "en-US"
+    target_lang: str = "my-MM"
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
     index_path = STATIC_DIR / "index.html"
     return HTMLResponse(content=index_path.read_text())
+
+
+@app.get("/tts-studio.html", response_class=HTMLResponse)
+async def standalone():
+    html_path = Path(__file__).parent.parent / "tts-studio.html"
+    if html_path.exists():
+        return HTMLResponse(content=html_path.read_text())
+    raise HTTPException(status_code=404, detail="Standalone HTML not found")
 
 
 @app.get("/api/voices")
@@ -233,6 +328,31 @@ async def get_presets():
     return {"presets": PLATFORM_PRESETS}
 
 
+@app.get("/api/narrators")
+async def get_narrators():
+    return {
+        "languages": list(NARRATORS.keys()),
+        "narrators": NARRATORS,
+        "labels": LANG_LABELS,
+    }
+
+
+@app.post("/api/translate")
+async def translate_text(req: TranslateRequest):
+    src_code = TRANSLATION_MAP.get(req.source_lang, req.source_lang)
+    tgt_code = TRANSLATION_MAP.get(req.target_lang, req.target_lang)
+    try:
+        translator = GoogleTranslator(source=src_code, target=tgt_code)
+        translated = translator.translate(req.text)
+        return {
+            "translated_text": translated,
+            "source_lang": req.source_lang,
+            "target_lang": req.target_lang,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {e}")
+
+
 @app.post("/api/synthesize")
 async def synthesize(req: TTSRequest):
     if req.platform and req.platform in PLATFORM_PRESETS:
@@ -241,7 +361,14 @@ async def synthesize(req: TTSRequest):
         req.rate = preset["rate"]
         req.pitch = preset["pitch"]
 
-    resolved_voice = get_voice_for_text(req.text, req.voice)
+    if req.language and req.narrator:
+        resolved_voice, resolved_rate, resolved_pitch = resolve_voice_settings(
+            req.language, req.narrator, req.voice, req.rate, req.pitch
+        )
+    else:
+        resolved_voice = get_voice_for_text(req.text, req.voice)
+        resolved_rate = req.rate
+        resolved_pitch = req.pitch
 
     file_id = str(uuid.uuid4())
     output_path = OUTPUT_DIR / f"{file_id}.mp3"
@@ -250,8 +377,8 @@ async def synthesize(req: TTSRequest):
         communicate = edge_tts.Communicate(
             text=req.text,
             voice=resolved_voice,
-            rate=req.rate,
-            pitch=req.pitch,
+            rate=resolved_rate,
+            pitch=resolved_pitch,
         )
         await communicate.save(str(output_path))
     except Exception as e:
@@ -278,13 +405,20 @@ async def batch_synthesize(req: BatchTTSRequest):
             continue
         file_id = str(uuid.uuid4())
         output_path = OUTPUT_DIR / f"{file_id}.mp3"
-        resolved_voice = get_voice_for_text(text.strip(), req.voice)
+        if req.language and req.narrator:
+            resolved_voice, resolved_rate, resolved_pitch = resolve_voice_settings(
+                req.language, req.narrator, text.strip(), req.rate, req.pitch
+            )
+        else:
+            resolved_voice = get_voice_for_text(text.strip(), req.voice)
+            resolved_rate = req.rate
+            resolved_pitch = req.pitch
         try:
             communicate = edge_tts.Communicate(
                 text=text.strip(),
                 voice=resolved_voice,
-                rate=req.rate,
-                pitch=req.pitch,
+                rate=resolved_rate,
+                pitch=resolved_pitch,
             )
             await communicate.save(str(output_path))
             results.append({

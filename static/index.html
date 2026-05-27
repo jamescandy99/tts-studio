@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTS Studio — Text to Speech for Creators</title>
+    <title>TTS Studio — Translate to Speech</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
@@ -13,12 +13,56 @@
 <header class="app-header">
     <div>
         <h1><span class="icon">🎙️</span> TTS Studio</h1>
-        <p class="subtitle">Professional text-to-speech for YouTube, TikTok & Facebook creators</p>
+        <p class="subtitle">Translate to Speech — English &amp; Burmese with Myanmar Narrators</p>
     </div>
 </header>
 
 <main class="main-container">
     <div class="content">
+        <!-- Language & Narrator Selection -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-title">🌐 Language &amp; Narrator</div>
+            <div class="lang-narrator-row">
+                <div class="lang-group">
+                    <label for="sourceLang">Input Language</label>
+                    <select id="sourceLang">
+                        <option value="en-US">English</option>
+                        <option value="my-MM">မြန်မာဘာသာ (Burmese)</option>
+                    </select>
+                </div>
+                <button class="swap-btn" id="swapLangBtn" title="Swap languages">⇄</button>
+                <div class="lang-group">
+                    <label for="targetLang">Output Language</label>
+                    <select id="targetLang">
+                        <option value="en-US">English</option>
+                        <option value="my-MM" selected>မြန်မာဘာသာ (Burmese)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="narrator-section">
+                <label>Choose Narrator</label>
+                <div class="narrator-grid" id="narratorGrid">
+                    <button class="narrator-btn active" data-narrator="male">
+                        <span class="narrator-icon">👦</span>
+                        <span class="narrator-label">Boy</span>
+                    </button>
+                    <button class="narrator-btn" data-narrator="female">
+                        <span class="narrator-icon">👧</span>
+                        <span class="narrator-label">Girl</span>
+                    </button>
+                    <button class="narrator-btn" data-narrator="baby_boy">
+                        <span class="narrator-icon">👶</span>
+                        <span class="narrator-label">Baby Boy</span>
+                    </button>
+                    <button class="narrator-btn" data-narrator="baby_girl">
+                        <span class="narrator-icon">👶</span>
+                        <span class="narrator-label">Baby Girl</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Platform Presets -->
         <div class="card" style="margin-bottom: 1.5rem;">
             <div class="card-title">🎯 Platform Presets</div>
@@ -64,6 +108,24 @@
                 <div class="text-area-wrapper">
                     <textarea id="textInput" placeholder="Type or paste your script here...&#10;&#10;For batch mode, separate paragraphs with blank lines."></textarea>
                     <span class="char-counter" id="charCount">0/10000 chars | ~0 words | ~0.0s</span>
+                </div>
+
+                <!-- Translation Preview -->
+                <div id="translationPreview" class="translation-preview" style="display:none;">
+                    <div class="translation-header">
+                        <span>🔄 Translation</span>
+                        <button class="btn-small" id="useTranslationBtn">Use this text</button>
+                    </div>
+                    <div id="translatedText" class="translated-text"></div>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn-translate" id="translateBtn" onclick="translateText()">
+                        <span>🔄</span> Translate
+                    </button>
+                    <button class="btn-translate-speak" id="translateSpeakBtn" onclick="translateAndSpeak()">
+                        <span>🌐</span> Translate &amp; Speak
+                    </button>
                 </div>
 
                 <!-- Controls -->
@@ -143,6 +205,14 @@
             <div class="card-title">💡 Creator Tips</div>
             <ul class="tips-list">
                 <li>
+                    <span class="tip-icon">🌐</span>
+                    <span><strong>Translate:</strong> Type in English, click Translate &amp; Speak for instant Burmese audio</span>
+                </li>
+                <li>
+                    <span class="tip-icon">👶</span>
+                    <span><strong>Narrators:</strong> Choose Boy, Girl, or Baby voices for Myanmar narration</span>
+                </li>
+                <li>
                     <span class="tip-icon">📐</span>
                     <span><strong>YouTube:</strong> Keep narration between 130-160 words/min for clarity</span>
                 </li>
@@ -157,10 +227,6 @@
                 <li>
                     <span class="tip-icon">🎯</span>
                     <span><strong>Tip:</strong> Use batch mode to split long scripts into segments</span>
-                </li>
-                <li>
-                    <span class="tip-icon">🔄</span>
-                    <span><strong>Tip:</strong> Try different voices and rates to find your brand voice</span>
                 </li>
             </ul>
         </div>
