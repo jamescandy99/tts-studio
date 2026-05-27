@@ -299,6 +299,14 @@ async def index():
     return HTMLResponse(content=index_path.read_text())
 
 
+@app.get("/tts-studio.html", response_class=HTMLResponse)
+async def standalone():
+    html_path = Path(__file__).parent.parent / "tts-studio.html"
+    if html_path.exists():
+        return HTMLResponse(content=html_path.read_text())
+    raise HTTPException(status_code=404, detail="Standalone HTML not found")
+
+
 @app.get("/api/voices")
 async def list_voices():
     voices = await edge_tts.list_voices()

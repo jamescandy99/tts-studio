@@ -838,6 +838,17 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 </main>
 
+<div id="server-error" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#1a1a24;border:1px solid #d63031;border-radius:12px;padding:40px;max-width:600px;text-align:center;color:#e8e8f0;font-family:Inter,sans-serif;">
+        <h2 style="color:#d63031;margin-top:0;">⚠️ Server Not Running</h2>
+        <p style="font-size:16px;line-height:1.6;">This HTML file needs the TTS Studio backend server to work.</p>
+        <p style="font-size:14px;color:#8888a0;">Please start the server first, then refresh this page:</p>
+        <pre style="background:#0f0f14;padding:16px;border-radius:8px;color:#00b894;font-size:14px;text-align:left;overflow-x:auto;">cd tts-studio
+pip install -e .
+uvicorn app.main:app --port 8000</pre>
+        <p style="font-size:13px;color:#8888a0;margin-bottom:0;">Then open this HTML file again or visit <a href="http://localhost:8000" style="color:#6c5ce7;">http://localhost:8000</a></p>
+    </div>
+</div>
 <script>
 const API = 'http://localhost:8000';
 let allVoices = {};
@@ -847,11 +858,21 @@ let selectedNarrator = 'male';
 let narratorData = {};
 
 document.addEventListener('DOMContentLoaded', () => {
+    checkServerConnection();
     loadVoices();
     loadNarrators();
     setupEventListeners();
     updateCharCount();
 });
+
+async function checkServerConnection() {
+    try {
+        const resp = await fetch(`${API}/api/voices`, {signal: AbortSignal.timeout(3000)});
+        if (!resp.ok) throw new Error('not ok');
+    } catch(e) {
+        document.getElementById('server-error').style.display = 'flex';
+    }
+}
 
 async function loadVoices() {
     try {
