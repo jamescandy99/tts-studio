@@ -80,6 +80,163 @@ body {
     gap: 0.5rem;
 }
 
+/* Language & Narrator Selection */
+.lang-narrator-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.lang-group { flex: 1; }
+
+.lang-group select {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.swap-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    color: var(--primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-bottom: 0.2rem;
+}
+
+.swap-btn:hover {
+    background: rgba(108, 92, 231, 0.15);
+    border-color: var(--primary);
+    transform: rotate(180deg);
+}
+
+.narrator-section { margin-top: 0.5rem; }
+
+.narrator-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.narrator-btn {
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.narrator-btn:hover { border-color: var(--primary); transform: translateY(-2px); }
+.narrator-btn.active { border-color: var(--primary); background: rgba(108, 92, 231, 0.1); }
+
+.narrator-icon { font-size: 1.5rem; }
+.narrator-label { font-size: 0.75rem; font-weight: 600; line-height: 1.2; }
+
+/* Translation Preview */
+.translation-preview {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.translation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.translated-text {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0.5rem;
+    background: var(--surface);
+    border-radius: 8px;
+    min-height: 2rem;
+}
+
+.btn-small {
+    padding: 0.3rem 0.6rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-small:hover { filter: brightness(1.15); }
+
+/* Action Row */
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.btn-translate,
+.btn-translate-speak {
+    padding: 0.7rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-translate {
+    background: var(--surface-2);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-translate:hover { background: rgba(108, 92, 231, 0.1); }
+.btn-translate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-translate-speak {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    color: white;
+}
+
+.btn-translate-speak:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4); }
+.btn-translate-speak:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
 /* Platform Presets */
 .presets-grid {
     display: grid;
@@ -439,4 +596,9 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 480px) {
     .controls-row { grid-template-columns: 1fr; }
     .presets-grid { grid-template-columns: 1fr 1fr; }
+    .narrator-grid { grid-template-columns: repeat(2, 1fr); }
+    .action-row { grid-template-columns: 1fr; }
+    .lang-narrator-row { flex-direction: column; align-items: stretch; }
+    .swap-btn { align-self: center; transform: rotate(90deg); }
+    .swap-btn:hover { transform: rotate(270deg); }
 }
