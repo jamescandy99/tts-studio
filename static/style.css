@@ -12,6 +12,7 @@
     --accent-fb: #1877f2;
     --accent-pod: #1db954;
     --accent-drama: #e17055;
+    --accent-book: #f0a500;
     --success: #00b894;
     --danger: #d63031;
     --radius: 12px;
@@ -111,6 +112,7 @@ body {
 .preset-facebook .preset-icon { color: var(--accent-fb); }
 .preset-podcast .preset-icon { color: var(--accent-pod); }
 .preset-dramatic .preset-icon { color: var(--accent-drama); }
+.preset-audiobook .preset-icon { color: var(--accent-book); }
 
 /* Text Input Area */
 .text-area-wrapper { position: relative; margin-bottom: 1rem; }
