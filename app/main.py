@@ -63,6 +63,13 @@ PLATFORM_PRESETS = {
         "voice": "en-US-GuyNeural",
         "description": "Slow, dramatic delivery for cinematic intros and trailers",
     },
+    "audiobook": {
+        "label": "Audiobook",
+        "rate": "-5%",
+        "pitch": "-1Hz",
+        "voice": "en-US-BrianNeural",
+        "description": "Warm, immersive narration for long-form audiobooks",
+    },
 }
 
 
